@@ -73,11 +73,30 @@ sub post_dbi_connect {
     $self->{lock_depth} = 0;
 }
 
-sub can_do_slaves { 0 }
+sub can_do_slaves { 1 }
 
-# TODO: Implement later
-#sub check_slave {
-#}
+sub check_slave {
+    my $self = shift;
+
+    return 0 unless $self->{slave};
+
+    my $next_check = \$self->{slave}->{next_check};
+
+    if ($$next_check > time()) {
+        return 1;
+    }
+
+    eval { $self->{slave}->dbh };
+    if ($@) {
+        warn "Error while checking slave: $@";
+        return 0;
+    }
+
+    # call time() again here because SQL blocks.
+    $$next_check = time() + 5;
+
+    return 1;
+}
 
 sub was_deadlock_error {
     my $self = shift;
