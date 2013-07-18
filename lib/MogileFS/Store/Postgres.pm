@@ -54,7 +54,7 @@ sub grant_privileges {
 
 sub can_replace { 0 }
 sub can_insertignore { 0 }
-sub can_insert_multi { 0 }
+sub can_insert_multi { 1 }
 sub unix_timestamp { "EXTRACT(epoch FROM NOW())::int4" }
 
 sub init {
