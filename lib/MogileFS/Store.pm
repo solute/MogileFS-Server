@@ -1915,7 +1915,7 @@ sub mass_insert_file_on {
     my ($self, @devfids) = @_;
     return 1 unless @devfids;
 
-    if (@devfids > 1 && ! $self->can_insert_multi) {
+    if (@devfids > 1 && ! ($self->can_insert_multi && ($self->can_replace || $self->can_insertignore))) {
         $self->mass_insert_file_on($_) foreach @devfids;
         return 1;
     }
