@@ -43,8 +43,9 @@ sub new_from_db_row {
 # quick port of old API.  perhaps not ideal.
 sub new_from_dmid_and_key {
     my ($class, $dmid, $key) = @_;
-    my $row = Mgd::get_store()->read_store->file_row_from_dmid_key($dmid, $key)
-        or return undef;
+    my $row = Mgd::get_store()->read_store->file_row_from_dmid_key($dmid, $key);
+    $row = Mgd::get_store()->file_row_from_dmid_key($dmid, $key) unless $row;
+    return undef unless $row;
     return $class->new_from_db_row($row);
 }
 
@@ -189,7 +190,9 @@ sub devids {
     return @{$self->{_devids}} if $self->{_devids};
 
     # else get it from the database
-    return Mgd::get_store()->read_store->fid_devids($self->id);
+    my @devs = Mgd::get_store()->read_store->fid_devids($self->id);
+    @devs = Mgd::get_store()->fid_devids($self->id) unless @devs;
+    return @devs;
 }
 
 sub devs {
