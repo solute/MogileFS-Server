@@ -744,7 +744,10 @@ sub cmd_list_keys {
     $limit += 0;
     $limit = 1000 if $limit > 1000;
 
-    my $keys = Mgd::get_store()->get_keys_like($dmid, $prefix, $after, $limit);
+    my $keys;
+    Mgd::get_store()->slaves_ok(sub {
+        $keys = Mgd::get_store()->read_store->get_keys_like($dmid, $prefix, $after, $limit);
+    });
 
     # if we got nothing, say so
     return $self->err_line('none_match') unless $keys && @$keys;
